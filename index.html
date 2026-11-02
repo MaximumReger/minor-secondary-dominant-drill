@@ -195,10 +195,12 @@
   // ---------- Score geometry ----------
   const W = 440, H = 280;
   const STAVE_X = 26, STAVE_W = W - STAVE_X - 8;
-  const BOX = 26, GAP = 4;
-  const PALETTE_WIDTH = 5 * BOX + 4 * GAP;
-  const PALETTE_GAP = 30; // room between the accidental boxes and the note for its own accidental
-  let NOTE_X = 300;       // set per example, just right of the accidental boxes
+  const BOX = 26, BOX_H = 30, GAP = 3;
+  const PALETTE_H = 5 * BOX_H + 4 * GAP;
+  const PALETTE_GAP = 44; // room between the accidental boxes and the notes for their own accidentals
+  const NOTE_WIDTH = 17;
+  // Notes sit at the center of the staff, directly above the chord symbol.
+  const NOTE_X = Math.round(STAVE_X + STAVE_W / 2 - NOTE_WIDTH / 2);
   const TREBLE_Y = 26, BASS_Y = 136;
   const STAFF = {
     treble: { topD: 38, minD: 26, maxD: 42, clef: "treble" },  // top line F5; A3 to C6
@@ -235,8 +237,6 @@
     const start = Math.max(staves.treble.getNoteStartX(), staves.bass.getNoteStartX());
     staves.treble.setNoteStartX(start);
     staves.bass.setNoteStartX(start);
-    // Place the notes as far left as possible while the accidental boxes still clear the key signature.
-    NOTE_X = Math.round(start + 4 + PALETTE_WIDTH + PALETTE_GAP);
     staves.treble.setContext(ctx).draw();
     staves.bass.setContext(ctx).draw();
     for (const type of ["BRACE", "SINGLE_LEFT", "SINGLE_RIGHT"]) {
@@ -268,6 +268,7 @@
       sn.addToModifierContext(mc);
       const tc = new VF.TickContext();
       tc.addTickable(sn).preFormat().setX(NOTE_X - start);
+      tc.setX(tc.getX() - (sn.getAbsoluteX() - NOTE_X)); // cancel the stave's built-in note padding
       sn.setContext(ctx).draw();
     }
 
@@ -404,15 +405,16 @@
 
   function drawPalette(ctx) {
     const VF = Vex.Flow;
-    const x0 = NOTE_X - PALETTE_GAP - PALETTE_WIDTH;
-    const yc = Math.max(BOX / 2 + 2, Math.min(H - BOX / 2 - 2, yFor(pending.staff, pending.d)));
+    // A column of boxes left of the note, narrow enough to leave the key signature visible.
+    const x = NOTE_X - PALETTE_GAP - BOX;
+    const top = Math.max(2, Math.min(H - PALETTE_H - 2, yFor(pending.staff, pending.d) - PALETTE_H / 2));
     ACCS.forEach((acc, i) => {
-      const x = x0 + i * (BOX + GAP);
+      const yc = top + BOX_H / 2 + i * (BOX_H + GAP);
       const g = ctx.openGroup("accbox");
       ctx.closeGroup();
       g.classList.add("accbox");
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      Object.entries({ x, y: yc - BOX / 2 - 3, width: BOX, height: BOX + 6, rx: 4 }).forEach(([k, v]) => rect.setAttribute(k, v));
+      Object.entries({ x, y: yc - BOX_H / 2, width: BOX, height: BOX_H, rx: 4 }).forEach(([k, v]) => rect.setAttribute(k, v));
       g.appendChild(rect);
       const glyphGroup = ctx.openGroup("glyph");
       VF.Glyph.renderGlyph(ctx, 0, 0, 34, ACC_GLYPH[acc], { category: "accidental" });
