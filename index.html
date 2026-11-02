@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minor Mode Secondary Dominant Drill</title>
+<title>Secondary Dominants in the Minor Mode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -58,7 +58,8 @@
   .streak { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 
   .sheet { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1rem 1.25rem; display: grid; gap: 0.25rem; }
-  .mode { margin: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.4rem); line-height: 1.1; } text-align: center; color: var(--muted); font-size: 0.9rem; text-wrap: balance; }
+  .mode { margin: 0 0 0.25rem; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.15; letter-spacing: normal; text-transform: none; color: var(--ink); text-wrap: balance; }
+  .sub { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; text-wrap: balance; }
   #score { color: var(--ink); display: flex; justify-content: center; touch-action: manipulation; }
   #score svg { width: 100%; max-width: 460px; height: auto; display: block; user-select: none; -webkit-user-select: none; }
   #score .ghost { opacity: 0.3; pointer-events: none; }
@@ -96,12 +97,13 @@
 <main>
   <a class="home" href="/">&larr; All drills</a>
   <header>
-    <h1>Minor Mode Secondary Dominant Drill</h1>
+    <span></span>
     <span class="streak" id="streak">Streak 0</span>
   </header>
 
   <section class="sheet" aria-label="Exercise">
-    <p class="mode">Minor Mode</p> Write this chord in that key, starting with the bass note.</p>
+    <h1 class="mode">Secondary Dominants in the Minor Mode</h1>
+    <p class="sub">Write the given chord in the given minor-mode key starting with the bass note</p>
     <div id="score"></div>
     <p class="sr-only" id="chord" aria-live="polite"></p>
   </section>
@@ -295,7 +297,7 @@
     svg.addEventListener("click", onClick);
   }
 
-  // Roman numeral and figures beneath the bass staff, centered under the note column.
+  // Roman numeral and figures beneath the bass staff, centered beneath the staff.
   function drawChordSymbol(svg, bassStave) {
     const NS = "http://www.w3.org/2000/svg";
     const mk = (name, attrs, parent) => {
@@ -327,7 +329,7 @@
     const rest = mk("text", { x, y }, g);
     rest.textContent = "/" + def.target;
     x += rest.getComputedTextLength();
-    g.setAttribute("transform", `translate(${NOTE_X + 8.5 - x / 2},0)`);
+    g.setAttribute("transform", `translate(${STAVE_X + STAVE_W / 2 - x / 2},0)`);
   }
 
   function yFor(staff, d) {

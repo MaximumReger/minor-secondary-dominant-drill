@@ -1,4 +1,4 @@
-# Minor Mode Secondary Dominant Drill
+# Secondary Dominants in the Minor Mode
 
 A practice page for writing secondary dominant chords in the minor mode on a grand staff. A separate drill covers the major mode.
 
