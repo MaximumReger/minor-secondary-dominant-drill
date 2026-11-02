@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minor-Key Secondary Dominant Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+<style>
+  /* Layout: one centered practice desk — an empty grand staff to write on, the chord symbol beneath it, feedback below. */
+  :root {
+    --bg: #eef1f4;
+    --paper: #fbfcfd;
+    --ink: #1b2330;
+    --muted: #5d6878;
+    --rule: #d3d9e1;
+    --accent: #2f4a8a;
+    --good: #1f7a45;
+    --bad: #c0352b;
+    --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161d; --paper: #1b212b; --ink: #e4e9f0; --muted: #98a3b3;
+      --rule: #2e3644; --accent: #8fa8e8; --good: #4cc27c; --bad: #ff6b5e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161d; --paper: #1b212b; --ink: #e4e9f0; --muted: #98a3b3;
+    --rule: #2e3644; --accent: #8fa8e8; --good: #4cc27c; --bad: #ff6b5e;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.5;
+    padding-block: 2rem 3rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 36rem; margin: 0 auto; display: grid; gap: 1.25rem; }
+  .home { justify-self: start; font-size: 0.85rem; font-weight: 500; color: var(--accent); text-decoration: none; }
+  .home:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .home:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; border-radius: 2px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  h1 { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .streak { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .sheet { background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1rem 1.25rem; display: grid; gap: 0.25rem; }
+  .sub { margin: 0; text-align: center; color: var(--muted); font-size: 0.9rem; text-wrap: balance; }
+  #score { color: var(--ink); display: flex; justify-content: center; touch-action: manipulation; }
+  #score svg { width: 100%; max-width: 460px; height: auto; display: block; user-select: none; -webkit-user-select: none; }
+  #score .ghost { opacity: 0.3; pointer-events: none; }
+  #score .accbox { cursor: pointer; outline: none; }
+  #score .accbox rect { fill: var(--paper); stroke: var(--accent); stroke-width: 1.25; }
+  #score .accbox:hover rect, #score .accbox:focus-visible rect { fill: color-mix(in srgb, var(--accent) 14%, var(--paper)); stroke-width: 2; }
+  #score .accbox.no rect { stroke: var(--bad); fill: color-mix(in srgb, var(--bad) 14%, var(--paper)); }
+  #score .accbox .glyph { fill: var(--ink); }
+
+  #score .symbol { font-family: var(--font-display); font-size: 28px; font-weight: 500; }
+  #score .symbol .figure { font-family: var(--font-body); font-size: 12.5px; font-weight: 500; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .feedback { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; min-height: 2.75rem; }
+  .msg { margin: 0; font-weight: 600; }
+  .msg.no { color: var(--bad); }
+  .msg.ok { color: var(--good); }
+  .hint { margin: 0; color: var(--muted); font-size: 0.85rem; }
+  button {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    border: 1.5px solid var(--accent);
+    background: var(--accent);
+    color: var(--paper);
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+  button.ghost-btn { background: transparent; color: var(--accent); font-weight: 500; font-size: 0.85rem; padding: 0.25rem 0.6rem; margin-left: 0.25rem; }
+</style>
+</head>
+<body>
+<main>
+  <a class="home" href="/">&larr; All drills</a>
+  <header>
+    <h1>Minor-Key Secondary Dominant Drill</h1>
+    <span class="streak" id="streak">Streak 0</span>
+  </header>
+
+  <section class="sheet" aria-label="Exercise">
+    <p class="sub">The key signature is for a minor key. Write this chord in that key, starting with the bass note.</p>
+    <div id="score"></div>
+    <p class="sr-only" id="chord" aria-live="polite"></p>
+  </section>
+
+  <div class="feedback" aria-live="polite">
+    <p class="msg" id="msg"></p>
+    <button type="button" id="nextBtn" hidden>Next example</button>
+  </div>
+  <p class="hint">Click a line or space to place a note, then pick its accidental from the boxes. Choose the note's real accidental. If the key signature already gives it, it shows in parentheses. <button type="button" class="ghost-btn" id="clearBtn">Clear my notes</button></p>
+</main>
+
+<script>
+(() => {
+  const LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
+  const NAT = [0, 2, 4, 5, 7, 9, 11];
+  const NATURAL_MINOR = [0, 2, 3, 5, 7, 8, 10];
+  const KEYS = ["A", "E", "B", "F#", "C#", "G#", "D#", "D", "G", "C", "F", "Bb", "Eb"];
+  const TARGETS = { III: 2, iv: 3, v: 4, VI: 5, VII: 6 };
+  // Every chord the drill can ask for.
+  const CHORDS = [
+    ...["III", "iv", "v", "VI", "VII"].flatMap(t => [
+      { fn: "V", q: "M", target: t },
+      { fn: "V", q: "Mm7", target: t },
+      { fn: "vii", q: "d", target: t },
+    ]),
+    ...["iv", "v"].map(t => ({ fn: "vii", q: "dd7", target: t })),
+    ...["III", "VI", "VII"].map(t => ({ fn: "vii", q: "hd7", target: t })),
+  ];
+  const IV = { M: [0, 4, 7], Mm7: [0, 4, 7, 10], d: [0, 3, 6], dd7: [0, 3, 6, 9], hd7: [0, 3, 6, 10] };
+  const MEMBER = ["root", "third", "fifth", "seventh"];
+  const INVERSION = ["root position", "first inversion", "second inversion", "third inversion"];
+  const ACCS = [-2, -1, 0, 1, 2];
+  const ACC_CODE = { "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" };
+  const ACC_GLYPH = { "-2": "accidentalDoubleFlat", "-1": "accidentalFlat", "0": "accidentalNatural", "1": "accidentalSharp", "2": "accidentalDoubleSharp" };
+  const ACC_NAME = { "-2": "double flat", "-1": "flat", "0": "natural", "1": "sharp", "2": "double sharp" };
+  const ACC_TEXT = { "-2": "𝄫", "-1": "♭", "0": "", "1": "♯", "2": "𝄪" };
+
+  const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+  const midiOf = (d, acc) => 12 * (Math.floor(d / 7) + 1) + NAT[((d % 7) + 7) % 7] + acc;
+  const nameOf = (letter, acc) => LETTERS[letter] + ACC_TEXT[acc];
+
+  function makeKey(tonicStr) {
+    const tonic = { letter: LETTERS.indexOf(tonicStr[0]), acc: tonicStr[1] === "#" ? 1 : tonicStr[1] === "b" ? -1 : 0 };
+    const tpc = NAT[tonic.letter] + tonic.acc;
+    const scale = NATURAL_MINOR.map((step, i) => {
+      const letter = (tonic.letter + i) % 7;
+      return { letter, acc: (((tpc + step - NAT[letter]) % 12) + 18) % 12 - 6 };
+    });
+    const sig = {};
+    scale.forEach(n => (sig[n.letter] = n.acc));
+    return { tonicStr, tonic, scale, sig };
+  }
+
+  // Spell a chord in stacked thirds from a root letter and pitch class.
+  function stack(rootLetter, rootPc, q) {
+    return IV[q].map((semi, i) => {
+      const letter = (rootLetter + 2 * i) % 7;
+      return { letter, acc: ((((rootPc + semi) - NAT[letter]) % 12) + 18) % 12 - 6 };
+    });
+  }
+
+  function spellChord(def, key) {
+    const t = key.scale[TARGETS[def.target]];
+    const tpc = NAT[t.letter] + t.acc;
+    if (def.fn === "V") return stack((t.letter + 4) % 7, tpc + 7, def.q);
+    return stack((t.letter + 6) % 7, tpc + 11, def.q);
+  }
+
+  function generate(prev) {
+    for (;;) {
+      const def = rand(CHORDS);
+      const key = makeKey(rand(KEYS));
+      const sev = def.q.endsWith("7");
+      // Every inversion except V6/4.
+      const inv = Math.floor(Math.random() * (sev ? 4 : def.fn === "V" ? 2 : 3));
+      if (prev && prev.def === def && prev.key.tonicStr === key.tonicStr && prev.inv === inv) continue;
+      const tones = spellChord(def, key);
+      return { def, key, inv, sev, tones };
+    }
+  }
+
+  function chordText(ex) {
+    const { def, inv, sev } = ex;
+    let num = def.fn + (def.q === "d" || def.q === "dd7" ? "°" : def.q === "hd7" ? "ø" : "");
+    const figs = sev ? ["⁷", "⁶₅", "⁴₃", "⁴₂"][inv] : ["", "⁶", "⁶₄"][inv];
+    return num + figs + "/" + def.target;
+  }
+
+  // ---------- Score geometry ----------
+  const W = 440, H = 280;
+  const STAVE_X = 26, STAVE_W = W - STAVE_X - 8;
+  const BOX = 26, GAP = 4;
+  const PALETTE_WIDTH = 5 * BOX + 4 * GAP;
+  const PALETTE_GAP = 30; // room between the accidental boxes and the note for its own accidental
+  let NOTE_X = 300;       // set per example, just right of the accidental boxes
+  const TREBLE_Y = 26, BASS_Y = 136;
+  const STAFF = {
+    treble: { topD: 38, minD: 26, maxD: 42, clef: "treble" },  // top line F5; A3 to C6
+    bass: { topD: 26, minD: 16, maxD: 30, clef: "bass" },      // top line A3; E2 to E4
+  };
+
+  let ex = null, notes = [], pending = null, done = false, streak = 0;
+  let view = null;
+  const msg = document.getElementById("msg");
+  const nextBtn = document.getElementById("nextBtn");
+
+  function say(text, kind) {
+    msg.textContent = text;
+    msg.className = "msg" + (kind ? " " + kind : "");
+  }
+
+  function color(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "currentColor";
+  }
+
+  function render() {
+    const VF = Vex.Flow;
+    const el = document.getElementById("score");
+    el.innerHTML = "";
+    const renderer = new VF.Renderer(el, VF.Renderer.Backends.SVG);
+    renderer.resize(W, H);
+    const ctx = renderer.getContext();
+    ctx.setFillStyle("currentColor");
+    ctx.setStrokeStyle("currentColor");
+    const staves = {
+      treble: new VF.Stave(STAVE_X, TREBLE_Y, STAVE_W).addClef("treble").addKeySignature(ex.key.tonicStr + "m"),
+      bass: new VF.Stave(STAVE_X, BASS_Y, STAVE_W).addClef("bass").addKeySignature(ex.key.tonicStr + "m"),
+    };
+    const start = Math.max(staves.treble.getNoteStartX(), staves.bass.getNoteStartX());
+    staves.treble.setNoteStartX(start);
+    staves.bass.setNoteStartX(start);
+    // Place the notes as far left as possible while the accidental boxes still clear the key signature.
+    NOTE_X = Math.round(start + 4 + PALETTE_WIDTH + PALETTE_GAP);
+    staves.treble.setContext(ctx).draw();
+    staves.bass.setContext(ctx).draw();
+    for (const type of ["BRACE", "SINGLE_LEFT", "SINGLE_RIGHT"]) {
+      new VF.StaveConnector(staves.treble, staves.bass).setType(VF.StaveConnector.type[type]).setContext(ctx).draw();
+    }
+
+    const RED = color("--bad"), BLUE = color("--accent");
+    for (const staff of ["treble", "bass"]) {
+      const entries = notes.filter(n => n.staff === staff).map(n => ({ ...n }));
+      if (pending && pending.staff === staff) entries.push({ ...pending, pending: true });
+      if (!entries.length) continue;
+      entries.sort((a, b) => a.d - b.d);
+      const sn = new VF.StaveNote({
+        clef: STAFF[staff].clef, duration: "w",
+        keys: entries.map(n => `${LETTERS[n.d % 7].toLowerCase()}/${Math.floor(n.d / 7)}`),
+      });
+      sn.setStave(staves[staff]);
+      entries.forEach((n, i) => {
+        const bad = n.status === "bad";
+        if (bad) sn.setKeyStyle(i, { fillStyle: RED, strokeStyle: RED });
+        else if (n.pending && !n.accBad) sn.setKeyStyle(i, { fillStyle: BLUE, strokeStyle: BLUE });
+        if (n.acc === null || n.acc === undefined) return;
+        const a = new VF.Accidental(ACC_CODE[n.acc]);
+        if (n.acc === ex.key.sig[n.d % 7]) a.setAsCautionary();
+        if (bad || n.accBad) a.setStyle({ fillStyle: RED, strokeStyle: RED });
+        sn.addModifier(a, i);
+      });
+      const mc = new VF.ModifierContext();
+      sn.addToModifierContext(mc);
+      const tc = new VF.TickContext();
+      tc.addTickable(sn).preFormat().setX(NOTE_X - start);
+      sn.setContext(ctx).draw();
+    }
+
+    const svg = el.querySelector("svg");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.removeAttribute("width");
+    svg.removeAttribute("height");
+    svg.style.width = "";
+    svg.style.height = "";
+    drawChordSymbol(svg, staves.bass);
+
+    // Hover ghost: a faint whole note with ledger lines, moved as the pointer moves.
+    const ghost = ctx.openGroup("ghost");
+    VF.Glyph.renderGlyph(ctx, NOTE_X, 0, 39, "noteheadWhole", { category: "noteHead" });
+    ctx.closeGroup();
+    ghost.classList.add("ghost");
+    ghost.style.display = "none";
+    const ledgers = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    ledgers.classList.add("ghost");
+    svg.appendChild(ledgers);
+
+    view = { svg, staves, ghost, ledgers, start };
+    if (pending && !done) drawPalette(ctx);
+
+    svg.addEventListener("pointermove", onMove);
+    svg.addEventListener("pointerleave", hideGhost);
+    svg.addEventListener("click", onClick);
+  }
+
+  // Roman numeral and figures beneath the bass staff, centered under the note column.
+  function drawChordSymbol(svg, bassStave) {
+    const NS = "http://www.w3.org/2000/svg";
+    const mk = (name, attrs, parent) => {
+      const el = document.createElementNS(NS, name);
+      for (const k in attrs) el.setAttribute(k, attrs[k]);
+      parent.appendChild(el);
+      return el;
+    };
+    const { def, inv, sev } = ex;
+    let num = def.fn;
+    if (def.q === "d" || def.q === "dd7") num += "°";
+    if (def.q === "hd7") num += "ø";
+    const figs = sev ? [["7"], ["6", "5"], ["4", "3"], ["4", "2"]][inv] : [[], ["6"], ["6", "4"]][inv];
+    const y = bassStave.getYForLine(4) + 48;
+    const g = mk("g", { class: "symbol", fill: "currentColor" }, svg);
+    let x = 0;
+    const word = mk("text", { x, y }, g);
+    word.textContent = num;
+    x += word.getComputedTextLength() + (/[°ø]$/.test(num) ? 3 : 1);
+    if (figs.length) {
+      const tops = figs.length === 1 ? [y - 11] : [y - 13, y + 1];
+      const widths = figs.map((f, i) => {
+        const t = mk("text", { x, y: tops[i], class: "figure" }, g);
+        t.textContent = f;
+        return t.getComputedTextLength();
+      });
+      x += Math.max(...widths) + 1;
+    }
+    const rest = mk("text", { x, y }, g);
+    rest.textContent = "/" + def.target;
+    x += rest.getComputedTextLength();
+    g.setAttribute("transform", `translate(${NOTE_X + 8.5 - x / 2},0)`);
+  }
+
+  function yFor(staff, d) {
+    return view.staves[staff].getYForLine(0) + (STAFF[staff].topD - d) * 5;
+  }
+
+  function ledgerYs(staff, d) {
+    const pos = STAFF[staff].topD - d; // 0 = top line, 8 = bottom line, one step per line or space
+    const ys = [];
+    const top = view.staves[staff].getYForLine(0);
+    for (let p = -2; p >= pos; p -= 2) ys.push(top + p * 5);
+    for (let p = 10; p <= pos; p += 2) ys.push(top + p * 5);
+    return ys;
+  }
+
+  function locate(evt) {
+    const pt = view.svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    const p = pt.matrixTransform(view.svg.getScreenCTM().inverse());
+    if (p.x < view.start - 10 || p.x > STAVE_X + STAVE_W) return null;
+    const split = (view.staves.treble.getYForLine(4) + view.staves.bass.getYForLine(0)) / 2;
+    const staff = p.y < split ? "treble" : "bass";
+    const d = STAFF[staff].topD - Math.round((p.y - view.staves[staff].getYForLine(0)) / 5);
+    if (d < STAFF[staff].minD || d > STAFF[staff].maxD) return null;
+    return { staff, d };
+  }
+
+  function hideGhost() {
+    if (!view) return;
+    view.ghost.style.display = "none";
+    view.ledgers.innerHTML = "";
+  }
+
+  function onMove(evt) {
+    if (done || evt.target.closest(".accbox")) return hideGhost();
+    const loc = locate(evt);
+    if (!loc) return hideGhost();
+    const y = yFor(loc.staff, loc.d);
+    view.ghost.style.display = "";
+    view.ghost.setAttribute("transform", `translate(0,${y})`);
+    view.ledgers.innerHTML = "";
+    for (const ly of ledgerYs(loc.staff, loc.d)) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", NOTE_X - 4);
+      line.setAttribute("x2", NOTE_X + 21);
+      line.setAttribute("y1", ly);
+      line.setAttribute("y2", ly);
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-width", "1.4");
+      view.ledgers.appendChild(line);
+    }
+  }
+
+  function onClick(evt) {
+    if (done || evt.target.closest(".accbox")) return;
+    const loc = locate(evt);
+    if (!loc) return;
+    notes = notes.filter(n => n.status !== "bad");
+    if (notes.some(n => n.d === loc.d && n.staff === loc.staff)) {
+      pending = null;
+      say("There's already a note there. Choose another line or space.", "");
+      render();
+      return;
+    }
+    pending = { d: loc.d, staff: loc.staff, acc: null, accBad: false };
+    say("Now choose an accidental.", "");
+    render();
+    const first = view.svg.querySelector(".accbox");
+    if (first && evt.detail === 0) first.focus();
+  }
+
+  function drawPalette(ctx) {
+    const VF = Vex.Flow;
+    const x0 = NOTE_X - PALETTE_GAP - PALETTE_WIDTH;
+    const yc = Math.max(BOX / 2 + 2, Math.min(H - BOX / 2 - 2, yFor(pending.staff, pending.d)));
+    ACCS.forEach((acc, i) => {
+      const x = x0 + i * (BOX + GAP);
+      const g = ctx.openGroup("accbox");
+      ctx.closeGroup();
+      g.classList.add("accbox");
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      Object.entries({ x, y: yc - BOX / 2 - 3, width: BOX, height: BOX + 6, rx: 4 }).forEach(([k, v]) => rect.setAttribute(k, v));
+      g.appendChild(rect);
+      const glyphGroup = ctx.openGroup("glyph");
+      VF.Glyph.renderGlyph(ctx, 0, 0, 34, ACC_GLYPH[acc], { category: "accidental" });
+      ctx.closeGroup();
+      glyphGroup.classList.add("glyph");
+      g.appendChild(glyphGroup);
+      const bb = glyphGroup.getBBox();
+      glyphGroup.setAttribute("transform", `translate(${x + BOX / 2 - (bb.x + bb.width / 2)},${yc - (bb.y + bb.height / 2)})`);
+      if (pending.accBad && pending.acc === acc) g.classList.add("no");
+      g.setAttribute("tabindex", "0");
+      g.setAttribute("role", "button");
+      g.setAttribute("aria-label", ACC_NAME[acc]);
+      const choose = e => { e.stopPropagation(); chooseAcc(acc); };
+      g.addEventListener("click", choose);
+      g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(e); } });
+    });
+  }
+
+  function chooseAcc(acc) {
+    if (!pending || done) return;
+    const letter = pending.d % 7;
+    const member = ex.tones.findIndex(t => t.letter === letter);
+    const name = nameOf(letter, acc);
+    if (member === -1) {
+      notes.push({ d: pending.d, staff: pending.staff, acc, status: "bad" });
+      pending = null;
+      say(`${name} isn't in this chord. Try another note.`, "no");
+      return render();
+    }
+    if (ex.tones[member].acc !== acc) {
+      pending.acc = acc;
+      pending.accBad = true;
+      say(`Right letter, wrong accidental. Try another accidental.`, "no");
+      render();
+      const box = view.svg.querySelectorAll(".accbox")[ACCS.indexOf(acc)];
+      if (box && document.activeElement && document.activeElement.closest && document.activeElement.closest(".accbox")) box.focus();
+      return;
+    }
+    const midi = midiOf(pending.d, acc);
+    const ok = notes.filter(n => n.status === "ok");
+    if (ok.some(n => midiOf(n.d, n.acc) === midi)) {
+      pending = null;
+      say("That pitch is already in your chord. Try another note.", "");
+      return render();
+    }
+    const lowest = ok.length ? Math.min(...ok.map(n => midiOf(n.d, n.acc))) : Infinity;
+    if (midi < lowest && member !== ex.inv) {
+      notes.push({ d: pending.d, staff: pending.staff, acc, status: "bad" });
+      pending = null;
+      say(`${name} is in the chord, but this chord is in ${INVERSION[ex.inv]}, so the lowest note must be the ${MEMBER[ex.inv]}.`, "no");
+      return render();
+    }
+    notes.push({ d: pending.d, staff: pending.staff, acc, status: "ok" });
+    pending = null;
+    const have = new Set(notes.filter(n => n.status === "ok").map(n => ex.tones.findIndex(t => t.letter === n.d % 7)));
+    if (have.size === ex.tones.length) {
+      done = true;
+      streak++;
+      document.getElementById("streak").textContent = "Streak " + streak;
+      const tonic = nameOf(ex.key.tonic.letter, ex.key.tonic.acc);
+      const spelled = ex.tones.map(t => nameOf(t.letter, t.acc)).join(", ");
+      say(`Correct! In ${tonic} minor, ${chordText(ex)} is ${spelled}.`, "ok");
+      nextBtn.hidden = false;
+      render();
+      nextBtn.focus();
+      return;
+    }
+    say(`${name} is correct. Keep going.`, "");
+    render();
+  }
+
+  function next() {
+    ex = generate(ex);
+    notes = [];
+    pending = null;
+    done = false;
+    nextBtn.hidden = true;
+    document.getElementById("chord").textContent = "Chord to write: " + chordText(ex);
+    say("");
+    render();
+  }
+
+  nextBtn.addEventListener("click", next);
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    if (done) return;
+    notes = [];
+    pending = null;
+    say("");
+    render();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && pending && !done) { pending = null; say(""); render(); }
+  });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => ex && render());
+  // Re-measure the chord symbol once the web fonts have loaded.
+  if (document.fonts) document.fonts.ready.then(() => ex && render());
+
+  next();
+})();
+</script>
+</body>
+</html>
