@@ -1,6 +1,6 @@
-# Minor-Key Secondary Dominant Drill
+# Minor Mode Secondary Dominant Drill
 
-A practice page for writing secondary dominant chords in minor keys on a grand staff.
+A practice page for writing secondary dominant chords in the minor mode on a grand staff. A separate drill covers the major mode.
 
 Each example shows a minor-key signature, without naming the key, and a chord symbol beneath the staff: V or V7 of III, iv, v, VI or VII; vii° or vii°7 of iv or v; or vii° or viiø7 of III, VI or VII. Chords appear in any inversion except V6/4.
 
